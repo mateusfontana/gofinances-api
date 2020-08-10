@@ -3,6 +3,7 @@ import { getCustomRepository, getRepository } from 'typeorm';
 import Transaction from '../models/Transaction';
 import TransactionsRepository from '../repositories/TransactionsRepository';
 import Category from '../models/Category';
+import AppError from '../errors/AppError';
 
 interface Request {
   title: string;
@@ -20,6 +21,12 @@ class CreateTransactionService {
   }: Request): Promise<Transaction> {
     const categoriesRepository = getRepository(Category);
     const transactionsRepository = getCustomRepository(TransactionsRepository);
+
+    const { total } = await transactionsRepository.getBalance();
+
+    if (type === 'outcome' && total < value) {
+      throw new AppError('Value must be lower than or equal to total balance');
+    }
 
     let transactionCategory = await categoriesRepository.findOne({
       where: { title: category },
