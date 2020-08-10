@@ -26,14 +26,14 @@ class CreateTransactionService {
     });
 
     if (!transactionCategory) {
-      transactionCategory = await categoriesRepository.create({
+      transactionCategory = categoriesRepository.create({
         title: category,
       });
 
       await categoriesRepository.save(transactionCategory);
     }
 
-    const transaction = await transactionsRepository.create({
+    const transaction = transactionsRepository.create({
       title,
       type,
       value,
